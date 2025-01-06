@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clicker</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Styles globaux */
+        body {
+            position: relative;
+            margin: 0;
+            overflow: hidden;
+            transition: background 1s;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to bottom, #FFD700, #FFA500); /* Fond par défaut */
+        }
+
+        .clicker-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: calc(100vh - 160px); /* Ajuster pour header et footer */
+        }
+
+        .scores {
+            display: flex;
+            justify-content: space-evenly;
+            width: 100%;
+            margin: 2rem 0;
+        }
+
+        .bocal {
+            position: relative;
+            width: 150px;
+            height: 200px;
+            background-image: url('placeholder_bocal.png'); /* Image de bocal */
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+
+        .bocal span {
+            position: relative;
+            z-index: 2;
+            color: #333;
+            font-size: 2rem;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.8);
+        }
+
+        .bocal:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.2);
+            z-index: 1;
+        }
+
+        .bocal-title {
+            position: absolute;
+            top: -2rem;
+            width: 100%;
+            text-align: center;
+            font-size: 1rem;
+            color: #555;
+            z-index: 3;
+        }
+
+        .nuclear-button {
+            background: radial-gradient(circle, #ffcc00, #ff9900, #cc3300);
+            border: 3px solid #660000;
+            border-radius: 50%;
+            width: 200px;
+            height: 200px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: white;
+            text-shadow: 1px 1px 2px black;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .nuclear-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 15px rgba(255, 153, 0, 0.75);
+        }
+
+        .nuclear-button:active {
+            transform: scale(0.95);
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .sun {
+            position: absolute;
+            top: 10%;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 5rem;
+            filter: hue-rotate(0deg); /* Teinte dynamique */
+            transition: filter 1s;
+        }
+
+        .environment {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            pointer-events: none; /* Empêche les interactions avec la div */
+            z-index: -1;
+        }
+
+    </style>
+</head>
+<body>
+    <header>
+        <a href="index.html" style="color: white; text-decoration: none;">Tiny Task</a>
+    </header>
+
+    <div class="clicker-container">
+        <div class="sun" id="sun">☀️</div>
+        <div class="scores">
+            <div class="bocal" id="personal-score-container">
+                <div class="bocal-title">Score Perso</div>
+                <span id="personal-score">0</span>
+            </div>
+            <div class="bocal" id="global-score-container">
+                <div class="bocal-title">Score Total</div>
+                <span id="global-score">0</span>
+            </div>
+        </div>
+        <button class="nuclear-button" id="nuclear-button">CLIQUE !</button>
+    </div>
+
+    <div class="environment" id="environment"></div>
+
+    <footer>
+        <p>&copy; All rights reserved 2024 Tiny Task.</p>
+        <p>Developed by Matis Morfin and Lino Doux.</p>
+    </footer>
+
+    <script>
+        // Gestion des scores
+        let personalScore = 0;
+        let globalScore = localStorage.getItem('globalScore') ? parseInt(localStorage.getItem('globalScore'), 10) : 0;
+        let currentEnvironment = Math.floor(globalScore / 1000) % 5;
+
+        const personalScoreElement = document.getElementById('personal-score');
+        const globalScoreElement = document.getElementById('global-score');
+        const nuclearButton = document.getElementById('nuclear-button');
+        const sun = document.getElementById('sun');
+        const environment = document.getElementById('environment');
+
+        // Environnements
+        const environments = [
+            {
+                name: "desert",
+                background: "linear-gradient(to bottom, #FFD700, #FFA500)",
+                sunHue: 30
+            },
+            {
+                name: "arctic",
+                background: "linear-gradient(to bottom, #00CFFF, #0044FF)",
+                sunHue: 200
+            },
+            {
+                name: "forest",
+                background: "linear-gradient(to bottom, #66CC33, #006600)",
+                sunHue: 100
+            },
+            {
+                name: "city",
+                background: "linear-gradient(to bottom, #888888, #333333)",
+                sunHue: 0
+            },
+            {
+                name: "beach",
+                background: "linear-gradient(to bottom, #FFE4B5, #FF8C00)",
+                sunHue: 50
+            }
+        ];
+
+        function updateEnvironment() {
+            const env = environments[currentEnvironment];
+            environment.style.background = env.background;
+            sun.style.filter = `hue-rotate(${env.sunHue}deg)`;
+        }
+
+        // Afficher les scores initiaux
+        personalScoreElement.textContent = personalScore;
+        globalScoreElement.textContent = globalScore;
+        updateEnvironment();
+
+        // Ajouter un point lorsqu'on clique sur le bouton
+        nuclearButton.addEventListener('click', () => {
+            console.log("Bouton cliqué"); // Log pour débogage
+            personalScore++;
+            globalScore++;
+
+            // Mettre à jour l'affichage des scores
+            personalScoreElement.textContent = personalScore;
+            globalScoreElement.textContent = globalScore;
+
+            // Sauvegarder le score global dans le stockage local
+            localStorage.setItem('globalScore', globalScore);
+
+            // Changer d'environnement toutes les 1000 points
+            const newEnvironment = Math.floor(globalScore / 1000) % environments.length;
+            if (newEnvironment !== currentEnvironment) {
+                currentEnvironment = newEnvironment;
+                updateEnvironment();
+            }
+        });
+    </script>
+</body>
+</html>
