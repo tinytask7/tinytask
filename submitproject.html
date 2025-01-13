@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Envoyer un Projet</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 100vh;
+            background: linear-gradient(to bottom, #74ebd5, #9face6);
+            color: #333;
+        }
+
+        header, footer {
+            position: fixed;
+            left: 0;
+            width: 100%;
+            background-color: #111827;
+            color: white;
+            text-align: center;
+            padding: 10px;
+            z-index: 10;
+        }
+
+        header {
+            top: 0;
+        }
+
+        footer {
+            bottom: 0;
+        }
+
+        .content {
+            margin-top: 60px;
+            margin-bottom: 60px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: calc(100vh - 120px);
+            text-align: center;
+        }
+
+        form {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            width: 80%;
+            max-width: 500px;
+        }
+
+        input[type="text"], input[type="email"], textarea {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        textarea {
+            resize: none;
+            height: 100px;
+        }
+
+        button {
+            background: linear-gradient(to right, #6a11cb, #2575fc);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        button:hover {
+            background: linear-gradient(to right, #2575fc, #6a11cb);
+        }
+
+        .instructions {
+            margin-bottom: 20px;
+            font-size: 1rem;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <a href="index.html" style="color: white; text-decoration: none;">Tiny Task</a>
+    </header>
+
+    <div class="content">
+        <form action="mailto:morfinmatis@gmail.com" method="post" enctype="text/plain">
+            <div class="instructions">
+                Remplissez le formulaire ci-dessous pour soumettre votre projet. Assurez-vous que l'objet du mail soit "Projet TinyTask".
+            </div>
+            <input type="text" name="name" placeholder="Votre nom" required>
+            <input type="email" name="email" placeholder="Votre email" required>
+            <textarea name="message" placeholder="Entrez le code de votre projet." required></textarea>
+            <input type="hidden" name="subject" value="Projet TinyTask">
+            <button type="submit">Envoyer</button>
+        </form>
+    </div>
+
+    <footer>
+        <p>&copy; All right reserved 2025 Tiny Task. </p>
+        <p>Developed by Matis Morfin and Lino Doux.</p>
+        <br>
+        <p>THANK'S</p>
+        <href>** contact **</href>
+    </footer>
+</body>
+</html>

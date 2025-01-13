@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Random Site</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background: linear-gradient(to bottom, #ff9a9e, #fad0c4);
+            color: #333;
+        }
+
+        header {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #fff;
+        }
+
+        .button-container {
+            text-align: center;
+            margin: 20px;
+        }
+
+        .random-button {
+            background: linear-gradient(to right, #ff6a00, #ee0979);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-size: 1.2rem;
+            font-weight: bold;
+            padding: 15px 30px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .random-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        footer {
+            position: absolute;
+            bottom: 10px;
+            color: #fff;
+        }
+
+        header, footer {
+            position: fixed;
+            left: 0;
+            width: 100%;
+            background-color: #111827;
+            color: white;
+            text-align: center;
+            padding: 10px;
+            z-index: 10;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <a href="index.html" style="color: white; text-decoration: none;">Tiny Task</a>
+    </header>
+
+    <div class="button-container">
+        <button class="random-button" id="random-button">Visiter un site inutile</button>
+    </div>
+
+    <footer>
+        <p>&copy; All right reserved 2024 Tiny Task. </p>
+        <p>Developed by Matis Morfin and Lino Doux.</p>
+        <br>
+        <p>THANK'S</p>
+        <href>** voici mon cv **</href>
+    </footer>
+
+    <script>
+        // Liste de sites inutiles
+        const sites = [
+            "https://theuselessweb.com/",
+            "https://pointerpointer.com/",
+            "https://mondrianandme.com/",
+            "https://www.omfgdogs.com/",
+            "https://alwaysjudgeabookbyitscover.com/",
+            "https://heeeeeeeey.com/",
+            "https://nooooooooooooooo.com/",
+            "https://corndog.io/",
+            "https://cat-bounce.com/",
+            "https://eelslap.com/",
+            "https://fr.wikipedia.org/wiki/Wikip%C3%A9dia:Articles_insolites",
+            "https://www.motsaleatoires.com/?fs=10&fs2=0&Submit=Nouveau+mot"
+        ];
+
+        // Bouton de redirection aléatoire
+        const randomButton = document.getElementById("random-button");
+        randomButton.addEventListener("click", () => {
+            const randomIndex = Math.floor(Math.random() * sites.length);
+            const randomSite = sites[randomIndex];
+            window.open(randomSite, "_blank"); // Ouvrir le site dans un nouvel onglet
+        });
+    </script>
+</body>
+</html>

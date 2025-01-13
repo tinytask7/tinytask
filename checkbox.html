@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>checkbox</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background: linear-gradient(to bottom, #c6ffdd, #fbd786, #f7797d);
+            color: #333;
+        }
+
+        header, footer {
+            position: fixed;
+            left: 0;
+            width: 100%;
+            background-color: #111827;
+            color: white;
+            text-align: center;
+            padding: 10px;
+            z-index: 10;
+        }
+
+        header {
+            top: 0;
+        }
+
+        footer {
+            bottom: 0;
+        }
+
+        .content {
+            margin-top: 60px;
+            margin-bottom: 60px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+        }
+
+        #score-display {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+        }
+
+        #game-board {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            max-width: 500px;
+            position: relative;
+        }
+
+        .game-box {
+            display: inline-block;
+            width: 50px;
+            height: 50px;
+            background-color: #4CAF50;
+            border: 1px solid #333;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .hidden {
+            background-color: transparent;
+            border-color: transparent;
+        }
+
+        .small {
+            width: 20px;
+            height: 20px;
+        }
+
+        .same-color {
+            background-color: #f7797d; /* Same as background gradient */
+        }
+
+        .moving {
+            position: absolute;
+        }
+
+        header, footer {
+            position: fixed;
+            left: 0;
+            width: 100%;
+            background-color: #111827;
+            color: white;
+            text-align: center;
+            padding: 10px;
+            z-index: 10;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <a href="index.html" style="color: white; text-decoration: none;">Tiny Task</a>
+    </header>
+
+    <div class="content">
+        <div id="score-display">
+            <p>Score Perso : <span id="personal-score">0</span></p>
+            <p>Score Total (Cases) : <span id="total-score-checkboxes">0</span></p>
+        </div>
+        <div id="game-board"></div>
+    </div>
+
+    <footer>
+        <p>&copy; All right reserved 2025 Tiny Task. </p>
+        <p>Developed by Matis Morfin and Lino Doux.</p>
+        <br>
+        <p>THANK'S</p>
+        <href>** contact **</href>
+    </footer>
+
+    <script>
+        const gameBoard = document.getElementById('game-board');
+        const personalScoreElement = document.getElementById('personal-score');
+        const totalScoreCheckboxesElement = document.getElementById('total-score-checkboxes');
+
+        let personalScore = parseInt(localStorage.getItem('personalScoreCheckboxes')) || 0;
+        let totalScoreCheckboxes = parseInt(localStorage.getItem('totalScoreCheckboxes')) || 0;
+
+        personalScoreElement.textContent = personalScore;
+        totalScoreCheckboxesElement.textContent = totalScoreCheckboxes;
+
+        let wave = 0;
+
+        function generateBoxes() {
+            gameBoard.innerHTML = ''; // Reset game board
+            wave++;
+            const boxCount = Math.min(10, 5 + wave); // Number of boxes per wave
+
+            for (let i = 0; i < boxCount; i++) {
+                const box = document.createElement('div');
+                box.classList.add('game-box');
+
+                // Effets variables sur les cases
+                const effects = ['hidden', 'small', 'same-color', 'moving'];
+                const effect = effects[Math.floor(Math.random() * effects.length)];
+                box.classList.add(effect);
+
+                if (effect === 'moving') {
+                    startMoving(box);
+                }
+
+                box.addEventListener('click', () => {
+                    personalScore++;
+                    totalScoreCheckboxes++;
+                    personalScoreElement.textContent = personalScore;
+                    totalScoreCheckboxesElement.textContent = totalScoreCheckboxes;
+
+                    localStorage.setItem('personalScoreCheckboxes', personalScore);
+                    localStorage.setItem('totalScoreCheckboxes', totalScoreCheckboxes);
+
+                    box.remove(); // Remove clicked box
+                    if (gameBoard.childElementCount === 0) generateBoxes(); // Generate new wave
+                });
+
+                gameBoard.appendChild(box);
+            }
+        }
+
+        function startMoving(box) {
+            const boardRect = gameBoard.getBoundingClientRect();
+            const moveInterval = setInterval(() => {
+                box.style.left = `${Math.random() * (boardRect.width - 50)}px`;
+                box.style.top = `${Math.random() * (boardRect.height - 50)}px`;
+            }, 500);
+
+            box.addEventListener('mouseenter', () => {
+                clearInterval(moveInterval); // Stop moving when clicked
+            });
+        }
+
+        // Initialiser le jeu
+        generateBoxes();
+    </script>
+</body>
+</html>

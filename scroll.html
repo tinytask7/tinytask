@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scroll Challenge</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: monospace;
+            background: linear-gradient(to bottom, #87ceeb, #ffffff);
+            color: #333;
+            line-height: 1.5;
+        }
+
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background-color: #4CAF50;
+            color: white;
+            text-align: center;
+            padding: 10px;
+            z-index: 10;
+        }
+
+        #character {
+            text-align: center;
+            margin-top: 60px;
+            white-space: pre;
+        }
+
+        footer {
+            text-align: center;
+            margin: 20px 0;
+            color: #555;
+        }
+
+        header, footer {
+            position: fixed;
+            left: 0;
+            width: 100%;
+            background-color: #111827;
+            color: white;
+            text-align: center;
+            padding: 10px;
+            z-index: 10;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <a href="index.html" style="color: white; text-decoration: none;">Tiny Task</a>
+    </header>
+
+    <div id="character"></div>
+
+    <footer>
+        <p>&copy; All right reserved 2025 Tiny Task. </p>
+        <p>Developed by Matis Morfin and Lino Doux.</p>
+        <br>
+        <p>THANK'S</p>
+        <href>** contact **</href>
+    </footer>
+
+    <script>
+        // Variables globales
+        const characterElement = document.getElementById("character");
+        const characters = [
+            [
+                "   o  \n  /|\\ \n  / \\ ",
+                "  o   \n /|\\  \n / \\  ",
+                "   o  \n  |\\  \n / \\  ",
+            ],
+            [
+                "   [ ]  \n    |   \n   / \\  ",
+                "    o   \n   /|\\  \n   / \\  ",
+                "   w    \n  /|\\   \n  / \\   ",
+            ],
+        ];
+        const heightPerStage = 1000; // Hauteur entre chaque palier en pixels
+        let currentStage = parseInt(localStorage.getItem("scrollStage")) || 0;
+
+        // Fonction pour générer le personnage
+        function generateCharacter(stage) {
+            let character = "";
+            for (let i = 0; i < 50; i++) {
+                character += "   |\n";
+            }
+            character += characters[stage % characters.length][Math.floor(Math.random() * 3)];
+            return character;
+        }
+
+        // Fonction pour sauvegarder l'étape actuelle
+        function saveStage(stage) {
+            localStorage.setItem("scrollStage", stage);
+        }
+
+        // Initialisation

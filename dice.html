@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lancer un Dé</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background: linear-gradient(to bottom, #74ebd5, #9face6);
+            color: #333;
+        }
+
+        header, footer {
+            position: fixed;
+            left: 0;
+            width: 100%;
+            background-color: #111827;
+            color: white;
+            text-align: center;
+            padding: 10px;
+            z-index: 10;
+        }
+
+        header {
+            top: 0;
+        }
+
+        footer {
+            bottom: 0;
+        }
+
+        .content {
+            margin-top: 60px;
+            margin-bottom: 60px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #dice-container {
+            width: 100px;
+            height: 100px;
+            position: relative;
+            margin: 20px;
+        }
+
+        .dice-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: bold;
+            background-color: white;
+            border: 2px solid #333;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            opacity: 0;
+            transform: scale(0.9);
+            transition: opacity 0.3s, transform 0.3s;
+        }
+
+        .dice-face.active {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        button {
+            background: linear-gradient(to right, #ff6a00, #ee0979);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-size: 1.2rem;
+            font-weight: bold;
+            padding: 10px 20px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        button:hover {
+            transform: scale(1.05);
+        }
+
+        #score-display {
+            margin-top: 20px;
+            font-size: 1.2rem;
+        }
+
+        header, footer {
+            position: fixed;
+            left: 0;
+            width: 100%;
+            background-color: #111827;
+            color: white;
+            text-align: center;
+            padding: 10px;
+            z-index: 10;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <a href="index.html" style="color: white; text-decoration: none;">Tiny Task</a>
+    </header>
+
+    <div class="content">
+        <div id="score-display">
+            <p>Score Perso : <span id="personal-score">0</span></p>
+            <p>Score Total (Dé) : <span id="total-score-dice">0</span></p>
+        </div>
+        <div id="dice-container">
+            <div class="dice-face active" id="face-1">1</div>
+            <div class="dice-face" id="face-2">2</div>
+            <div class="dice-face" id="face-3">3</div>
+            <div class="dice-face" id="face-4">4</div>
+            <div class="dice-face" id="face-5">5</div>
+            <div class="dice-face" id="face-6">6</div>
+        </div>
+        <button id="roll-dice">Lancer le Dé</button>
+    </div>
+
+    <footer>
+        <p>&copy; All right reserved 2025 Tiny Task. </p>
+        <p>Developed by Matis Morfin and Lino Doux.</p>
+        <br>
+        <p>THANK'S</p>
+        <href>** contact **</href>
+    </footer>
+
+    <script>
+        const rollDiceButton = document.getElementById('roll-dice');
+        const diceContainer = document.getElementById('dice-container');
+        const personalScoreElement = document.getElementById('personal-score');
+        const totalScoreDiceElement = document.getElementById('total-score-dice');
+
+        let personalScore = parseInt(localStorage.getItem('personalScoreDice')) || 0;
+        let totalScoreDice = parseInt(localStorage.getItem('totalScoreDice')) || 0;
+
+        personalScoreElement.textContent = personalScore;
+        totalScoreDiceElement.textContent = totalScoreDice;
+
+        let currentFace = 1;
+
+        rollDiceButton.addEventListener('click', () => {
+            let rolls = 10; // Nombre de rotations simulées
+            const interval = setInterval(() => {
+                const nextFace = Math.ceil(Math.random() * 6);
+                document.getElementById(`face-${currentFace}`).classList.remove('active');
+                document.getElementById(`face-${nextFace}`).classList.add('active');
+                currentFace = nextFace;
+                rolls--;
+
+                if (rolls === 0) {
+                    clearInterval(interval);
+                    updateScores(currentFace);
+                }
+            }, 100);
+        });
+
+        function updateScores(faceValue) {
+            personalScore += faceValue;
+            totalScoreDice += faceValue;
+
+            personalScoreElement.textContent = personalScore;
+            totalScoreDiceElement.textContent = totalScoreDice;
+
+            localStorage.setItem('personalScoreDice', personalScore);
+            localStorage.setItem('totalScoreDice', totalScoreDice);
+        }
+    </script>
+</body>
+</html>

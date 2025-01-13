@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tapeur</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background: linear-gradient(to bottom, #f7e8d4, #fa709a);
+            color: #333;
+        }
+
+        header, footer {
+            position: fixed;
+            left: 0;
+            width: 100%;
+            background-color: #111827;
+            color: white;
+            text-align: center;
+            padding: 10px;
+            z-index: 10;
+        }
+
+        header {
+            top: 0;
+        }
+
+        footer {
+            bottom: 0;
+        }
+
+        .content {
+            margin-top: 80px;
+            margin-bottom: 80px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 90%;
+            height: calc(100vh - 160px);
+        }
+
+        #word-display {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            font-size: 1.5rem;
+            line-height: 2rem;
+            width: 100%;
+            max-width: 800px;
+            text-align: left;
+        }
+
+        .word {
+            padding: 5px 10px;
+            border-radius: 5px;
+            display: inline-block;
+        }
+
+        .letter {
+            display: inline-block;
+            font-size: 1.5rem;
+            transition: color 0.3s, opacity 0.3s;
+        }
+
+        .letter.correct {
+            color: green;
+            opacity: 0.5;
+        }
+
+        .letter.error {
+            color: red;
+        }
+
+        #input-box {
+            width: 100%;
+            max-width: 800px;
+            padding: 15px;
+            font-size: 1.5rem;
+            border: 2px solid #333;
+            border-radius: 10px;
+            text-align: center;
+            margin-bottom: 20px;
+            background-color: white;
+        }
+
+        #controls {
+            display: flex;
+            gap: 10px;
+        }
+
+        button {
+            background: linear-gradient(to right, #ff6a00, #ee0979);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-size: 1.2rem;
+            font-weight: bold;
+            padding: 10px 20px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            transform: scale(1.05);
+        }
+
+        #score-display, #total-score-display {
+            font-size: 1.5rem;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <a href="index.html" style="color: white; text-decoration: none;">Tiny Task</a>
+    </header>
+
+    <div class="content">
+        <div id="word-display"></div>
+        <input type="text" id="input-box" placeholder="Tape ici..." disabled />
+        <div id="controls">
+            <button id="start-button">Start</button>
+            <button id="reset-button" disabled>Reset</button>
+        </div>
+        <div id="score-display">Score perso : 0</div>
+        <div id="total-score-display">Score total : 0</div>
+    </div>
+
+    <footer>
+        <p>&copy; All right reserved 2025 Tiny Task. </p>
+        <p>Developed by Matis Morfin and Lino Doux.</p>
+        <br>
+        <p>THANK'S</p>
+        <a href="#">** contact **</a>
+    </footer>
+
+    <script>
+        const wordDisplay = document.getElementById("word-display");
+        const inputBox = document.getElementById("input-box");
+        const startButton = document.getElementById("start-button");
+        const resetButton = document.getElementById("reset-button");
+        const scoreDisplay = document.getElementById("score-display");
+        const totalScoreDisplay = document.getElementById("total-score-display");
+
+        const phrases = [
+            "Je m'appelle Matis, mais nan c'est moi, mais moi pas toi arrête de me copier!", 
+            "Bonjour je suis Dora! Holla yo soy Dora! Frudubuduhu Dora!", 
+            "Mais soudaine dans une contrée lointaine un jeune KIWI pris son courrage à demain pour affronter le grand le terrible le montrueur CoUtEaU!", 
+            "Holala dis donc c'est ta vraie tête c'est pas un filtre?", 
+            "Tu es SHINY!", 
+            "Sache que ecrire tout ces mots m'a pris une éternité; tu es fier de profiter du travail des autres !?",
+            "Ca va je suis pas trop chiant? DIT PAS SI SINON JE TE CASSE LA GEULE enfait je peux pas mais je peux te HACKER MDRRR", 
+            "Tu as combien de points? Houla sit donc il faut faire mieux que ça dit donc je connais quelqu'un qui...", 
+            "WINX", 
+            "Les éléphants chantent parfois dans la forêt, mais seulement quand les montres sont à l'heure.",
+            "Si les bananes pouvaient voler, elles emporteraient des sandwichs pour le goûter.",
+            "Les nuages de confettis jouent à cache-cache chaque dimanche matin.",
+            "Quand le canapé décide de danser, le sol applaudit toujours en silence.", 
+            "Le cactus a invité une horloge à prendre le thé, mais elle est arrivée en retard de trois mois.",
+            "ET HALORS tu te pose sûrement cette question en ecrivant ces phrases ou encore quelle futile utilité je ne sais pas si tu as remarqué mais j'ai mit un û ou et encore un â et non la je t'ai feinté bref j'en était où? mdr encore une lettre chi@nte, promis j'arrêtte, mal écrit mais drôle nan juré la c'est la fin"
+        ];
+
+        let currentPhrases = [];
+        let currentPhraseIndex = 0;
+        let score = 0;
+        let totalScore = 0;
+        let isPlaying = false;
+
+        function generatePhrases() {
+            wordDisplay.innerHTML = "";
+            currentPhrases = [];
+            for (let i = 0; i < 3; i++) {
+                const phrase = phrases[Math.floor(Math.random() * phrases.length)];
+                currentPhrases.push(phrase);
+
+                const phraseElement = document.createElement("div");
+                phraseElement.classList.add("word");
+
+                phrase.split(" ").forEach((word) => {
+                    const span = document.createElement("span");
+                    span.textContent = word;
+                    span.classList.add("letter");
+                    phraseElement.appendChild(span);
+                });
+
+                wordDisplay.appendChild(phraseElement);
+            }
+        }
+
+        function startGame() {
+            score = 0;
+            isPlaying = true;
+            generatePhrases();
+            currentPhraseIndex = 0;
+            updateActivePhrase();
+            inputBox.disabled = false;
+            inputBox.value = "";
+            inputBox.focus();
+            startButton.disabled = true;
+            resetButton.disabled = false;
+            scoreDisplay.textContent = `Score perso : ${score}`;
+        }
+
+        function resetGame() {
+            isPlaying = false;
+            inputBox.disabled = true;
+            inputBox.value = "";
+            wordDisplay.innerHTML = "";
+            startButton.disabled = false;
+            resetButton.disabled = true;
+            scoreDisplay.textContent = "Score perso : 0";
+        }
+
+        function updateActivePhrase() {
+            const phrases = document.querySelectorAll(".word");
+            phrases.forEach((phrase, index) => {
+                phrase.style.opacity = index === currentPhraseIndex ? "1" : "0.5";
+            });
+        }
+
+        inputBox.addEventListener("input", () => {
+            if (!isPlaying) return;
+
+            const activePhrase = currentPhrases[currentPhraseIndex];
+            const typedValue = inputBox.value.trim();
+
+            const phraseElement = wordDisplay.children[currentPhraseIndex];
+            const words = phraseElement.querySelectorAll(".letter");
+
+            let correct = true;
+            words.forEach((word, index) => {
+                if (typedValue.split(" ")[index] === word.textContent) {
+                    word.classList.add("correct");
+                } else if (typedValue.split(" ")[index] === undefined) {
+                    word.classList.remove("correct", "error");
+                } else {
+                    word.classList.add("error");
+                    correct = false;
+                }
+            });
+
+            if (typedValue === activePhrase) {
+                score++;
+                totalScore++;
+                scoreDisplay.textContent = `Score perso : ${score}`;
+                totalScoreDisplay.textContent = `Score total : ${totalScore}`;
+                currentPhraseIndex++;
+                if (currentPhraseIndex >= currentPhrases.length) {
+                    isPlaying = false;
+                    inputBox.disabled = true;
+                    resetButton.disabled = false;
+                    scoreDisplay.textContent = `Final Score : ${score}`;
+                } else {
+                    updateActivePhrase();
+                    inputBox.value = "";
+                }
+            }
+        });
+
+        startButton.addEventListener("click", startGame);
+        resetButton.addEventListener("click", resetGame);
+    </script>
+</body>
+</html>

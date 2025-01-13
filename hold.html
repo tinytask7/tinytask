@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rester Cliqué</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background: linear-gradient(to bottom, #1e3c72, #2a5298);
+            color: #fff;
+        }
+
+        header {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .scores {
+            display: flex;
+            justify-content: space-around;
+            width: 100%;
+            max-width: 500px;
+            margin: 20px 0;
+        }
+
+        .score-box {
+            text-align: center;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+
+        .score-box span {
+            display: block;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .hold-button {
+            background: radial-gradient(circle, #ff7f50, #ff4500);
+            border: none;
+            border-radius: 10px;
+            width: 200px;
+            height: 80px;
+            font-size: 1.2rem;
+            color: #fff;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .hold-button:active {
+            transform: scale(0.95);
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+
+        footer {
+            position: absolute;
+            bottom: 10px;
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <a href="index.html" style="color: white; text-decoration: none;">Tiny Task</a>
+    </header>
+
+    <div class="scores">
+        <div class="score-box">
+            <span id="personal-score">0:00</span>
+            Score Perso
+        </div>
+        <div class="score-box">
+            <span id="global-score">0:00</span>
+            Score Total
+        </div>
+    </div>
+
+    <button class="hold-button" id="hold-button">Reste Cliqué !</button>
+
+    <footer>
+        <p>&copy; All right reserved 2025 Tiny Task. </p>
+        <p>Developed by Matis Morfin and Lino Doux.</p>
+        <br>
+        <p>THANK'S</p>
+        <href>** contact **</href>
+    </footer>
+
+    <script>
+        const holdButton = document.getElementById("hold-button");
+        const personalScoreElement = document.getElementById("personal-score");
+        const globalScoreElement = document.getElementById("global-score");
+
+        let personalScore = parseTime(localStorage.getItem("personalScore")) || 0;
+        let globalScore = parseTime(localStorage.getItem("globalScore")) || 0;
+
+        let holdStartTime = null;
+
+        // Charger les scores initiaux
+        updateScoreDisplay(personalScoreElement, personalScore);
+        updateScoreDisplay(globalScoreElement, globalScore);
+
+        // Gestion de l'événement de maintien du bouton
+        holdButton.addEventListener("mousedown", () => {
+            holdStartTime = Date.now();
+        });
+
+        holdButton.addEventListener("mouseup", () => {
+            if (holdStartTime) {
+                const holdDuration = Date.now() - holdStartTime;
+                holdStartTime = null;
+
+                personalScore += holdDuration;
+                globalScore += holdDuration;
+
+                // Mettre à jour les scores
+                updateScoreDisplay(personalScoreElement, personalScore);
+                updateScoreDisplay(globalScoreElement, globalScore);
+
+                // Sauvegarder dans le localStorage
+                localStorage.setItem("personalScore", formatTime(personalScore));
+                localStorage.setItem("globalScore", formatTime(globalScore));
+            }
+        });
+
+        // Convertir un temps en millisecondes en minutes et secondes
+        function formatTime(ms) {
+            const totalSeconds = Math.floor(ms / 1000);
+            const minutes = Math.floor(totalSeconds / 60);
+            const seconds = totalSeconds % 60;
+            return `${minutes}:${seconds.toString().padStart(2, "0")}`;
+        }
+
+        // Convertir un temps au format texte (min:sec) en millisecondes
+        function parseTime(timeStr) {
+            if (!timeStr) return 0;
+            const [minutes, seconds] = timeStr.split(":").map(Number);
+            return (minutes * 60 + seconds) * 1000;
+        }
+
+        // Mettre à jour l'affichage d'un score
+        function updateScoreDisplay(element, score) {
+            element.textContent = formatTime(score);
+        }
+    </script>
+</body>
+</html>
