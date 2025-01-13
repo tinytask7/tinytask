@@ -103,7 +103,7 @@
 
         .sun {
             position: absolute;
-            top: 10%;
+            top: 15%;
             left: 50%;
             transform: translateX(-50%);
             font-size: 5rem;
@@ -123,6 +123,16 @@
             z-index: -1;
         }
 
+        footer {
+            background-color: #111827;
+            color: white;
+            text-align: center;
+            padding: 10px;
+            position: relative;
+            bottom: 0;
+            width: 100%;
+            z-index: 10;
+        }
     </style>
 </head>
 <body>
@@ -153,76 +163,24 @@
     </footer>
 
     <script>
-        // Gestion des scores
+        // Variables globales
         let personalScore = 0;
-        let globalScore = localStorage.getItem('globalScore') ? parseInt(localStorage.getItem('globalScore'), 10) : 0;
-        let currentEnvironment = Math.floor(globalScore / 1000) % 5;
-
         const personalScoreElement = document.getElementById('personal-score');
         const globalScoreElement = document.getElementById('global-score');
         const nuclearButton = document.getElementById('nuclear-button');
-        const sun = document.getElementById('sun');
-        const environment = document.getElementById('environment');
 
-        // Environnements
-        const environments = [
-            {
-                name: "desert",
-                background: "linear-gradient(to bottom, #FFD700, #FFA500)",
-                sunHue: 30
-            },
-            {
-                name: "arctic",
-                background: "linear-gradient(to bottom, #00CFFF, #0044FF)",
-                sunHue: 200
-            },
-            {
-                name: "forest",
-                background: "linear-gradient(to bottom, #66CC33, #006600)",
-                sunHue: 100
-            },
-            {
-                name: "city",
-                background: "linear-gradient(to bottom, #888888, #333333)",
-                sunHue: 0
-            },
-            {
-                name: "beach",
-                background: "linear-gradient(to bottom, #FFE4B5, #FF8C00)",
-                sunHue: 50
-            }
-        ];
-
-        function updateEnvironment() {
-            const env = environments[currentEnvironment];
-            environment.style.background = env.background;
-            sun.style.filter = `hue-rotate(${env.sunHue}deg)`;
-        }
-
-        // Afficher les scores initiaux
-        personalScoreElement.textContent = personalScore;
+        // Charger le score global
+        let globalScore = parseInt(localStorage.getItem('globalScore')) || 0;
         globalScoreElement.textContent = globalScore;
-        updateEnvironment();
 
-        // Ajouter un point lorsqu'on clique sur le bouton
-        nuclearButton.addEventListener('click', () => {
-            console.log("Bouton cliqué"); // Log pour débogage
+        nuclearButton.addEventListener('mousedown', () => {
             personalScore++;
             globalScore++;
 
-            // Mettre à jour l'affichage des scores
             personalScoreElement.textContent = personalScore;
             globalScoreElement.textContent = globalScore;
 
-            // Sauvegarder le score global dans le stockage local
             localStorage.setItem('globalScore', globalScore);
-
-            // Changer d'environnement toutes les 1000 points
-            const newEnvironment = Math.floor(globalScore / 1000) % environments.length;
-            if (newEnvironment !== currentEnvironment) {
-                currentEnvironment = newEnvironment;
-                updateEnvironment();
-            }
         });
     </script>
 </body>
