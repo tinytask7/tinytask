@@ -247,24 +247,25 @@
 
         function generatePhrases() {
             wordDisplay.innerHTML = "";
-            currentPhrases = [];
-            for (let i = 0; i < 3; i++) {
-                const phrase = phrases[Math.floor(Math.random() * phrases.length)];
-                currentPhrases.push(phrase);
+            currentWords = [];
+            for (let i = 0; i < 3; i++) { // Par exemple, on affiche 3 phrases
+                const sentence = phrases[Math.floor(Math.random() * phrases.length)];
+                currentWords.push(sentence);
 
-                const phraseElement = document.createElement("div");
-                phraseElement.classList.add("word");
+                const sentenceElement = document.createElement("div");
+                sentenceElement.classList.add("word");
 
-                phrase.split(" ").forEach((word) => {
+                sentence.split("").forEach((char) => {
                     const span = document.createElement("span");
-                    span.textContent = word;
+                    span.textContent = char === " " ? "\u00A0" : char; // Préserve les espaces avec un espace insécable
                     span.classList.add("letter");
-                    phraseElement.appendChild(span);
+                    sentenceElement.appendChild(span);
                 });
 
-                wordDisplay.appendChild(phraseElement);
+                wordDisplay.appendChild(sentenceElement);
             }
         }
+
 
         function startGame() {
             score = 0;
@@ -335,6 +336,97 @@
                 }
             }
         });
+
+        inputBox.addEventListener("input", () => {
+            if (!isPlaying) return;
+
+            const activeSentence = currentWords[currentWordIndex];
+            const typedValue = inputBox.value.trim();
+
+            const sentenceElement = wordDisplay.children[currentWordIndex];
+            const letters = sentenceElement.querySelectorAll(".letter");
+
+            let correct = true;
+
+            letters.forEach((letter, index) => {
+                if (activeSentence[index] === " ") {
+                    letter.classList.remove("correct", "error");
+                    return; // Ignore spaces
+                }
+
+                if (typedValue[index] === letter.textContent) {
+                    letter.classList.add("correct");
+                    letter.classList.remove("error");
+                } else if (typedValue[index] === undefined) {
+                    letter.classList.remove("correct", "error");
+                } else {
+                    letter.classList.add("error");
+                    letter.classList.remove("correct");
+                    correct = false;
+                }
+            });
+
+            if (correct && typedValue.length === activeSentence.length) {
+                score += activeSentence.split(" ").length; // 1 point par mot
+                scoreDisplay.textContent = `Score : ${score}`;
+                currentWordIndex++;
+                inputBox.value = "";
+                updateActiveWord();
+
+                if (currentWordIndex >= currentWords.length) {
+                    generateWords();
+                    currentWordIndex = 0;
+                    updateActiveWord();
+                }
+            }
+        });
+
+        inputBox.addEventListener("input", () => {
+            if (!isPlaying) return;
+
+            const activeSentence = currentWords[currentWordIndex];
+            const typedValue = inputBox.value; // On ne supprime plus les espaces ici
+            const sentenceElement = wordDisplay.children[currentWordIndex];
+            const letters = sentenceElement.querySelectorAll(".letter");
+
+            let correct = true;
+            let correctLetters = 0;
+
+            letters.forEach((letter, index) => {
+                const currentTypedChar = typedValue[index];
+
+                if (currentTypedChar === letter.textContent) {
+                    letter.classList.add("correct");
+                    letter.classList.remove("error");
+                    correctLetters++;
+                } else if (currentTypedChar === undefined) {
+                    letter.classList.remove("correct", "error");
+                } else {
+                    letter.classList.add("error");
+                    letter.classList.remove("correct");
+                    correct = false;
+                }
+            });
+
+            // Ajouter 1 point toutes les 5 lettres correctement tapées
+            const newPoints = Math.floor(correctLetters / 5);
+            score += newPoints;
+            scoreDisplay.textContent = `Score : ${score}`;
+
+            if (correct && typedValue.length === activeSentence.length) {
+                currentWordIndex++;
+                inputBox.value = ""; // Réinitialise la saisie
+                updateActiveWord();
+
+                // Générer une nouvelle série de phrases si on arrive à la fin
+                if (currentWordIndex >= currentWords.length) {
+                    generateWords();
+                    currentWordIndex = 0;
+                    updateActiveWord();
+                }
+            }
+        });
+
 
         startButton.addEventListener("click", startGame);
         resetButton.addEventListener("click", resetGame);
