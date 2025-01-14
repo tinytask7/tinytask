@@ -219,66 +219,57 @@
         const startButton = document.getElementById("start-button");
         const resetButton = document.getElementById("reset-button");
         const scoreDisplay = document.getElementById("score-display");
-        const totalScoreDisplay = document.getElementById("total-score-display");
 
-        const phrases = [
-            "Je m'appelle Matis, mais nan c'est moi, mais moi pas toi arrête de me copier!", 
-            "Bonjour je suis Dora! Holla yo soy Dora! Frudubuduhu Dora!", 
-            "Mais soudaine dans une contrée lointaine un jeune KIWI pris son courrage à demain pour affronter le grand le terrible le montrueur CoUtEaU!", 
-            "Holala dis donc c'est ta vraie tête c'est pas un filtre?", 
-            "Tu es SHINY!", 
-            "Sache que ecrire tout ces mots m'a pris une éternité; tu es fier de profiter du travail des autres !?",
-            "Ca va je suis pas trop chiant? DIT PAS SI SINON JE TE CASSE LA GEULE enfait je peux pas mais je peux te HACKER MDRRR", 
-            "Tu as combien de points? Houla sit donc il faut faire mieux que ça dit donc je connais quelqu'un qui...", 
-            "WINX", 
-            "Les éléphants chantent parfois dans la forêt, mais seulement quand les montres sont à l'heure.",
-            "Si les bananes pouvaient voler, elles emporteraient des sandwichs pour le goûter.",
-            "Les nuages de confettis jouent à cache-cache chaque dimanche matin.",
-            "Quand le canapé décide de danser, le sol applaudit toujours en silence.", 
-            "Le cactus a invité une horloge à prendre le thé, mais elle est arrivée en retard de trois mois.",
-            "ET HALORS tu te pose sûrement cette question en ecrivant ces phrases ou encore quelle futile utilité je ne sais pas si tu as remarqué mais j'ai mit un û ou et encore un â et non la je t'ai feinté bref j'en était où? mdr encore une lettre chi@nte, promis j'arrêtte, mal écrit mais drôle nan juré la c'est la fin"
+        const words = [
+            "galaxie", "exploration", "robot", "licorne", "arc-en-ciel", "étoile", "aventure", "cosmos", "univers", "planète",
+            "voyage", "énergie", "créativité", "soleil", "lune", "phénomène", "science", "imagination", "curiosité", "découverte"
         ];
 
-        let currentPhrases = [];
-        let currentPhraseIndex = 0;
+        let currentWords = [];
+        let currentWordIndex = 0;
         let score = 0;
-        let totalScore = 0;
         let isPlaying = false;
 
-        function generatePhrases() {
+        function generateWords() {
             wordDisplay.innerHTML = "";
             currentWords = [];
-            for (let i = 0; i < 3; i++) { // Par exemple, on affiche 3 phrases
-                const sentence = phrases[Math.floor(Math.random() * phrases.length)];
-                currentWords.push(sentence);
+            let lastWord = "";
 
-                const sentenceElement = document.createElement("div");
-                sentenceElement.classList.add("word");
+            // Génère 3 mots sans mots similaires adjacents
+            for (let i = 0; i < 3; i++) {
+                let word;
+                do {
+                    word = words[Math.floor(Math.random() * words.length)];
+                } while (word === lastWord); // Assure qu'il n'y a pas deux mots identiques à côté
+                currentWords.push(word);
+                lastWord = word;
 
-                sentence.split("").forEach((char) => {
+                const wordElement = document.createElement("div");
+                wordElement.classList.add("word");
+
+                word.split("").forEach((char) => {
                     const span = document.createElement("span");
-                    span.textContent = char === " " ? "\u00A0" : char; // Préserve les espaces avec un espace insécable
+                    span.textContent = char;
                     span.classList.add("letter");
-                    sentenceElement.appendChild(span);
+                    wordElement.appendChild(span);
                 });
 
-                wordDisplay.appendChild(sentenceElement);
+                wordDisplay.appendChild(wordElement);
             }
         }
-
 
         function startGame() {
             score = 0;
             isPlaying = true;
-            generatePhrases();
-            currentPhraseIndex = 0;
-            updateActivePhrase();
+            generateWords();
+            currentWordIndex = 0;
+            updateActiveWord();
             inputBox.disabled = false;
             inputBox.value = "";
             inputBox.focus();
             startButton.disabled = true;
             resetButton.disabled = false;
-            scoreDisplay.textContent = `Score perso : ${score}`;
+            scoreDisplay.textContent = `Score : ${score}`;
         }
 
         function resetGame() {
@@ -288,86 +279,39 @@
             wordDisplay.innerHTML = "";
             startButton.disabled = false;
             resetButton.disabled = true;
-            scoreDisplay.textContent = "Score perso : 0";
+            scoreDisplay.textContent = "Score : 0";
         }
 
-        function updateActivePhrase() {
-            const phrases = document.querySelectorAll(".word");
-            phrases.forEach((phrase, index) => {
-                phrase.style.opacity = index === currentPhraseIndex ? "1" : "0.5";
-            });
-        }
-
-        inputBox.addEventListener("input", () => {
-            if (!isPlaying) return;
-
-            const activePhrase = currentPhrases[currentPhraseIndex];
-            const typedValue = inputBox.value.trim();
-
-            const phraseElement = wordDisplay.children[currentPhraseIndex];
-            const words = phraseElement.querySelectorAll(".letter");
-
-            let correct = true;
+        function updateActiveWord() {
+            const words = document.querySelectorAll(".word");
             words.forEach((word, index) => {
-                if (typedValue.split(" ")[index] === word.textContent) {
-                    word.classList.add("correct");
-                } else if (typedValue.split(" ")[index] === undefined) {
-                    word.classList.remove("correct", "error");
-                } else {
-                    word.classList.add("error");
-                    correct = false;
-                }
+                word.style.opacity = index === currentWordIndex ? "1" : "0.5";
             });
-
-            if (typedValue === activePhrase) {
-                score++;
-                totalScore++;
-                scoreDisplay.textContent = `Score perso : ${score}`;
-                totalScoreDisplay.textContent = `Score total : ${totalScore}`;
-                currentPhraseIndex++;
-                if (currentPhraseIndex >= currentPhrases.length) {
-                    isPlaying = false;
-                    inputBox.disabled = true;
-                    resetButton.disabled = false;
-                    scoreDisplay.textContent = `Final Score : ${score}`;
-                } else {
-                    updateActivePhrase();
-                    inputBox.value = "";
-                }
-            }
-        });
+        }
 
         inputBox.addEventListener("input", () => {
             if (!isPlaying) return;
 
-            const activeSentence = currentWords[currentWordIndex];
+            const activeWord = currentWords[currentWordIndex];
             const typedValue = inputBox.value.trim();
 
-            const sentenceElement = wordDisplay.children[currentWordIndex];
-            const letters = sentenceElement.querySelectorAll(".letter");
+            const wordElement = wordDisplay.children[currentWordIndex];
+            const letters = wordElement.querySelectorAll(".letter");
 
             let correct = true;
-
             letters.forEach((letter, index) => {
-                if (activeSentence[index] === " ") {
-                    letter.classList.remove("correct", "error");
-                    return; // Ignore spaces
-                }
-
                 if (typedValue[index] === letter.textContent) {
                     letter.classList.add("correct");
-                    letter.classList.remove("error");
                 } else if (typedValue[index] === undefined) {
                     letter.classList.remove("correct", "error");
                 } else {
                     letter.classList.add("error");
-                    letter.classList.remove("correct");
                     correct = false;
                 }
             });
 
-            if (correct && typedValue.length === activeSentence.length) {
-                score += activeSentence.split(" ").length; // 1 point par mot
+            if (correct && typedValue.length === activeWord.length) {
+                score++;
                 scoreDisplay.textContent = `Score : ${score}`;
                 currentWordIndex++;
                 inputBox.value = "";
@@ -378,55 +322,11 @@
                     currentWordIndex = 0;
                     updateActiveWord();
                 }
+            } else if (!correct) {
+                score -= 0.5;
+                scoreDisplay.textContent = `Score : ${score.toFixed(1)}`;
             }
         });
-
-        inputBox.addEventListener("input", () => {
-            if (!isPlaying) return;
-
-            const activeSentence = currentWords[currentWordIndex];
-            const typedValue = inputBox.value; // On ne supprime plus les espaces ici
-            const sentenceElement = wordDisplay.children[currentWordIndex];
-            const letters = sentenceElement.querySelectorAll(".letter");
-
-            let correct = true;
-            let correctLetters = 0;
-
-            letters.forEach((letter, index) => {
-                const currentTypedChar = typedValue[index];
-
-                if (currentTypedChar === letter.textContent) {
-                    letter.classList.add("correct");
-                    letter.classList.remove("error");
-                    correctLetters++;
-                } else if (currentTypedChar === undefined) {
-                    letter.classList.remove("correct", "error");
-                } else {
-                    letter.classList.add("error");
-                    letter.classList.remove("correct");
-                    correct = false;
-                }
-            });
-
-            // Ajouter 1 point toutes les 5 lettres correctement tapées
-            const newPoints = Math.floor(correctLetters / 5);
-            score += newPoints;
-            scoreDisplay.textContent = `Score : ${score}`;
-
-            if (correct && typedValue.length === activeSentence.length) {
-                currentWordIndex++;
-                inputBox.value = ""; // Réinitialise la saisie
-                updateActiveWord();
-
-                // Générer une nouvelle série de phrases si on arrive à la fin
-                if (currentWordIndex >= currentWords.length) {
-                    generateWords();
-                    currentWordIndex = 0;
-                    updateActiveWord();
-                }
-            }
-        });
-
 
         startButton.addEventListener("click", startGame);
         resetButton.addEventListener("click", resetGame);
